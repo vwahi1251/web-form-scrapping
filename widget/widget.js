@@ -7,19 +7,42 @@
 function execute() {
 	try {
     // Step 1 Scrape Fields and Create Fields list object.
+     function scrapeFields() {
+      const fields = [];
+      // Example of scraping input elements, adjust selectors as necessary
+      const inputs = document.querySelectorAll('input[name]', 'select[name]');
+      inputs.forEach(input => {
+        const name = input.name;
+        const label = document.querySelector(`label[for="${name}"]`)?.innerText || name;
+        fields.push({ [name]: label });
+      });
+
+      console.log(fields);
+      return fields;
+    }
+
+
     // Step 2 Add Listener for Top Frame to Receive Fields.
     if (isTopFrame()) {
+      const allFields = [];
       window.addEventListener('message', (event) => {
-        // - Merge fields from frames.
-        // - Process Fields and send event once all fields are collected.
+
+        if (event.data.fields) {
+        console.log(fields);
+        }
       });
     } else if (!isTopFrame()) {
       // Child frames sends Fields up to Top Frame.
+      const fields = scrapeFields();
+      sendFieldsToTop(fields);
     }
+console.log(fields);
 	} catch (e) {
 		console.error(e)
 	}
 }
+
+
 
 execute();
 
